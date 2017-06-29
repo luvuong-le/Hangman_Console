@@ -16,6 +16,33 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+    <Text Include="gameOver.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="hangman_title.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="win.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="showRArm.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="showLArm.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="showHead.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="showBody.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="showRLeg.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="showLLeg.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">

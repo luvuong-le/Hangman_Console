@@ -135,7 +135,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Text Include="gameOver.txt" />
+    <Text Include="hangman_title.txt" />
     <Text Include="ReadMe.txt" />
+    <Text Include="showBody.txt" />
+    <Text Include="showHead.txt" />
+    <Text Include="showLArm.txt" />
+    <Text Include="showLLeg.txt" />
+    <Text Include="showRArm.txt" />
+    <Text Include="showRLeg.txt" />
+    <Text Include="win.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
