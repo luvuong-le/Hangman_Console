@@ -8,23 +8,69 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <ctime>
+#include <windows.h>
+#include <limits.h>
+#undef min
+#undef max
 
 using namespace std;
 
 void readFile(string filename);
 void startGame();
 void startGuess(string playerName, string assignedWord, string hidden, int failed_inputs, int char_exposed);
+void startTwoPlayer();
+void chooseGameType();
+void clearScreen();
 
 int main()
 {
-	startGame();
+	chooseGameType();
     return 0;
+}
+
+void clearScreen() {
+	system("cls");
+}
+
+void chooseGameType() {
+	clearScreen();
+	readFile("hangman_title.txt");
+	int gameChoice = 0; 
+	cout << "Please enter which mode you would like to play";
+	cout << "\n1. Single Player \n2. Two Players \n3. Exit" << endl;
+	cout << "Enter number for game: ";
+	cin >> gameChoice;
+
+		while (gameChoice != 3) {
+			switch (gameChoice) {
+			case 1: 
+				startGame();
+				break;
+			case 2: 
+				startTwoPlayer();
+				break;
+			case 3:
+				exit(EXIT_SUCCESS);
+				break;
+			default:
+				cout << "Invalid Input, You must enter a number";
+				cin.clear();
+				cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
+				Sleep(0700);
+				chooseGameType();
+				break;
+			}
+		}
 }
 
 
 void startGame() {
-	//cout << "Welcome to hangman!" << endl;
-	cout << "---------------------------" << endl;
+	clearScreen();
+
+	readFile("hangman_title.txt");
+	int failed_inputs = 7;
+	int char_exposed = 0;
+
 
 	string player_name;
 
@@ -34,10 +80,6 @@ void startGame() {
 
 	cout << "Player Name: " << player_name << endl;
 
-
-	readFile("hangman_title.txt");
-	int failed_inputs = 7;
-	int char_exposed = 0;
 
 	cout << "\nStarting Game......" << endl;
 
@@ -69,6 +111,10 @@ void startGame() {
 	startGuess(player_name, assignedWord, display, failed_inputs, char_exposed);
 }
 
+void startTwoPlayer() {
+	clearScreen();
+}
+
 void startGuess(string playerName, string word, string hidden, int failed_inputs, int char_exposed)
 {
 	//Identify a list of max guesses = 5
@@ -86,7 +132,7 @@ void startGuess(string playerName, string word, string hidden, int failed_inputs
 		if (guess.length() == 1) {
 			//If guess was correct, reveal a letter in the array
 			for (int i = 0; i < word.length(); i++) {
-				if (guess[0] == word[i]) {
+				if (tolower(guess[0]) == tolower(word[i])) {
 					if (hidden[i] == word[i]) {
 						cout << "\nYouve already guessed this letter!" << endl;
 						startGuess(playerName, word, hidden, failed_inputs, char_exposed);
@@ -119,7 +165,7 @@ void startGuess(string playerName, string word, string hidden, int failed_inputs
 				cout << "\nWould you like to play again? [Y/N]" << endl;
 				cin >> start_new_game;
 				if (start_new_game == "Y" || start_new_game == "y") {
-					startGame();
+					chooseGameType();
 				}
 				else if (start_new_game == "N" || start_new_game == "n") {
 					cout << "See you next time!!" << endl;
@@ -127,26 +173,32 @@ void startGuess(string playerName, string word, string hidden, int failed_inputs
 				}
 				break;
 			case 1:
+				clearScreen();
 				readFile("showRLeg.txt");
 				cout << "\nYou have one more chance left!!\n" << endl;
 				break;
 			case 2:
+				clearScreen();
 				readFile("showLLeg.txt");
 				cout << "You have: " << failed_inputs << " tries left" << endl;
 				break;
 			case 3:
+				clearScreen();
 				readFile("showRArm.txt");
 				cout << "You have: " << failed_inputs << " tries left" << endl;
 				break;
 			case 4:
+				clearScreen();
 				readFile("showLArm.txt");
 				cout << "You have: " << failed_inputs << " tries left" << endl;
 				break;
 			case 5:
+				clearScreen();
 				readFile("showBody.txt");
 				cout << "You have: " << failed_inputs << " tries left" << endl;
 				break;
 			case 6:
+				clearScreen();
 				readFile("showHead.txt");
 				cout << "You have: " << failed_inputs << " tries left" << endl;
 				break;
@@ -164,7 +216,7 @@ void startGuess(string playerName, string word, string hidden, int failed_inputs
 		cout << "\nWould you like to play again? [Y/N]";
 		cin >> start_new_game;
 		if (start_new_game == "Y" || start_new_game == "y") {
-			startGame();
+			chooseGameType();
 		}
 		else {
 			cout << "See you next time!!" << endl;
