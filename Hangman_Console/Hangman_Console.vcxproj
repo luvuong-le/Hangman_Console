@@ -147,6 +147,7 @@
     <Text Include="singlePlayer.txt" />
     <Text Include="twoPlayers.txt" />
     <Text Include="win.txt" />
+    <Text Include="words.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

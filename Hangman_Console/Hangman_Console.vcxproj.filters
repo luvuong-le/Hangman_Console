@@ -49,6 +49,9 @@
     <Text Include="twoPlayers.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="words.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
