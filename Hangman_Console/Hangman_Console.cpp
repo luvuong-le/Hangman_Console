@@ -119,9 +119,11 @@ void chooseGameType() {
 		while (gameChoice != 3) {
 			switch (gameChoice) {
 			case 1: 
+				removeStringBuffer();
 				startGame(gameChoice);
 				break;
 			case 2: 
+				removeStringBuffer();
 				startTwoPlayer(gameChoice);
 				break;
 			case 3:
@@ -192,7 +194,6 @@ void startGame(int gameType) {
 }
 
 void startTwoPlayer(int gameType) {
-	removeStringBuffer();
 	clearScreen();
 	readFile("twoPlayers.txt");
 	cout << "\nIn this mode, one player will display a secret word for the other to guess, If the other player cannot guess it they lose!!" << endl;
@@ -210,6 +211,7 @@ void startTwoPlayer(int gameType) {
 
 		if (player1 == "" || player2 == ""){
 			displayErrorMessage("\nBoth Players must have a name");
+			Sleep(0700);
 			startTwoPlayer(gameType);
 		}
 
@@ -227,12 +229,12 @@ void startTwoPlayer(int gameType) {
 		getline(cin, secret_word);
 		for(int i = 0; i < secret_word.length(); i++){
 			if (isdigit(secret_word[i])) {
-				displayErrorMessage("\nNo Numbers are allowed in the word");
-				removeStringBuffer();
+				displayErrorMessage("No Numbers are allowed in the word\n");
+				Sleep(0700);
 			}
 			else if (secret_word == "") {
 				displayErrorMessage("\nWord Cannot be Empty");
-				removeStringBuffer();
+				Sleep(0700);
 			}
 		}
 		
@@ -242,7 +244,7 @@ void startTwoPlayer(int gameType) {
 		cout << "\nPlease enter amount of tries the user gets [Between 1 - 7]: ";
 		cin >> failed_inputs;
 		if (failed_inputs < 1 || failed_inputs > 7) {
-			displayErrorMessage("Sorry thats not valid, Please try again");
+			displayErrorMessage("Sorry thats not valid, Please try again\n");
 			removeStringBuffer();
 			continue;
 		}
@@ -323,8 +325,8 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 							//If letter matches, display the hidden letter
 							hidden[i] = word[i];
 							//Logic to display one less star if character guessed is correct
-							displaySuccessMessage("\n>>> You guessed right!");
-							cout << " {" << word[i] << "}";
+							displaySuccessMessage(">>> You guessed right!");
+							cout << " {" << word[i] << "}\n";
 							char_exposed++;
 							correct_guess = true;
 							continue;
