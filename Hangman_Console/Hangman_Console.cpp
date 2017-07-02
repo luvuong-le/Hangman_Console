@@ -16,7 +16,7 @@ using namespace std;
 
 void readFile(string filename);
 void startGame();
-void startGuess(string playerName, string assignedWord, string hidden, int failed_inputs, int char_exposed);
+void startGuess(string playerName, string assignedWord, string hidden, int failed_inputs, int char_exposed, int spaces_in_word);
 void startTwoPlayer();
 void chooseGameType();
 void clearScreen();
@@ -39,9 +39,8 @@ void clearScreen() {
 
 void chooseGameType() {
 	clearScreen();
-	changeTextColor(004);
-	readFile("hangman_title.txt");
 	changeTextColor(15);
+	readFile("hangman_title.txt");
 	int gameChoice = 0; 
 	cout << "Please enter which mode you would like to play";
 	cout << "\n1. Single Player \n2. Two Players \n3. Exit" << endl;
@@ -73,10 +72,10 @@ void chooseGameType() {
 
 void startGame() {
 	clearScreen();
-
 	readFile("singlePlayer.txt");
 	int failed_inputs = 7;
 	int char_exposed = 0;
+	int spaces_in_word = 0;
 
 
 	string player_name;
@@ -93,18 +92,17 @@ void startGame() {
 	srand(time(NULL));
 
 	//Create a list of words in an array
-	string words[] = { "Hello", "Quarter", "Champion", "Million", "Persona", "Giant", "Phantom" };
+	string words[] = { "Hello", "Quarter", "Champion", "Million", "Persona", "Giant", "Phantom", "Programming is Fun" };
 	//string letters_guessed[] = {};
 	string word_guessed = "";
 
 	//Display a random word with * numbers of letters
-	int random_index = rand() % 7;
+	int random_index = rand() % sizeof(words) / sizeof(words[0]);
 
 	string assignedWord = "";
 
 	for (int i = 0; i < sizeof(words) / sizeof(words[0]); i++) {
 		if (i == random_index) {
-			//cout << "Youre word is: " << words[random_index] << endl;
 			assignedWord = words[random_index];
 		}
 	}
@@ -112,22 +110,29 @@ void startGame() {
 	string display = assignedWord;
 
 	for (int i = 0; i < display.size(); i++) {
-		display[i] = '*';
+		if (display[i] == ' ') {
+			spaces_in_word++;
+			continue;
+		}
+		else {
+			display[i] = '*';
+		}
 	}
 
-	startGuess(player_name, assignedWord, display, failed_inputs, char_exposed);
+	startGuess(player_name, assignedWord, display, failed_inputs, char_exposed, spaces_in_word);
 }
 
 void startTwoPlayer() {
 	clearScreen();
+	readFile("twoPlayers.txt");
 }
 
-void startGuess(string playerName, string word, string hidden, int failed_inputs, int char_exposed)
+void startGuess(string playerName, string word, string hidden, int failed_inputs, int char_exposed, int spaces_in_word)
 {
 	string guess;
 	string start_new_game;
 
-	while (char_exposed < word.length()) {
+	while (char_exposed < word.length() - spaces_in_word) {
 		bool correct_guess = false;
 		//Begin Letting player guess the character one by one
 		cout << "\n\nPlease enter a character to guess in: " << hidden;
@@ -141,7 +146,7 @@ void startGuess(string playerName, string word, string hidden, int failed_inputs
 				if (tolower(guess[0]) == tolower(word[i])) {
 					if (hidden[i] == word[i]) {
 						cout << "\nYouve already guessed this letter!" << endl;
-						startGuess(playerName, word, hidden, failed_inputs, char_exposed);
+						startGuess(playerName, word, hidden, failed_inputs, char_exposed, spaces_in_word);
 					}
 					else {
 						//If letter matches, display the hidden letter
@@ -157,7 +162,7 @@ void startGuess(string playerName, string word, string hidden, int failed_inputs
 		}
 		else {
 			cout << "Please enter one letter only" << endl;
-			startGuess(playerName, word, hidden, failed_inputs, char_exposed);
+			startGuess(playerName, word, hidden, failed_inputs, char_exposed, spaces_in_word);
 		}
 
 		if (correct_guess == false) {
@@ -215,7 +220,7 @@ void startGuess(string playerName, string word, string hidden, int failed_inputs
 		}
 	}
 
-	if (char_exposed == hidden.length()) {
+	if (char_exposed == hidden.length() - spaces_in_word) {
 		cout << "\nThe word was: " << hidden << endl;
 		cout << "\nCongratulations: " << playerName << endl;
 		readFile("win.txt");
