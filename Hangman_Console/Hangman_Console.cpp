@@ -1,5 +1,4 @@
-// Hangman_Console.cpp : Defines the entry point for the console application.
-//
+// Hangman_Console.cpp : Defines the entry point for the console application. //
 
 #include "stdafx.h"
 #include <iostream>
@@ -21,11 +20,17 @@ void startGuess(string playerName, string assignedWord, string hidden, int faile
 void startTwoPlayer();
 void chooseGameType();
 void clearScreen();
+void changeTextColor(int colorNumber);
 
 int main()
 {
 	chooseGameType();
     return 0;
+}
+
+void changeTextColor(int colorNumber) {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, colorNumber);
 }
 
 void clearScreen() {
@@ -34,7 +39,9 @@ void clearScreen() {
 
 void chooseGameType() {
 	clearScreen();
+	changeTextColor(004);
 	readFile("hangman_title.txt");
+	changeTextColor(15);
 	int gameChoice = 0; 
 	cout << "Please enter which mode you would like to play";
 	cout << "\n1. Single Player \n2. Two Players \n3. Exit" << endl;
@@ -67,7 +74,7 @@ void chooseGameType() {
 void startGame() {
 	clearScreen();
 
-	readFile("hangman_title.txt");
+	readFile("singlePlayer.txt");
 	int failed_inputs = 7;
 	int char_exposed = 0;
 
@@ -117,7 +124,6 @@ void startTwoPlayer() {
 
 void startGuess(string playerName, string word, string hidden, int failed_inputs, int char_exposed)
 {
-	//Identify a list of max guesses = 5
 	string guess;
 	string start_new_game;
 

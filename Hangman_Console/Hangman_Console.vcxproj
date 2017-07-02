@@ -144,6 +144,8 @@
     <Text Include="showLLeg.txt" />
     <Text Include="showRArm.txt" />
     <Text Include="showRLeg.txt" />
+    <Text Include="singlePlayer.txt" />
+    <Text Include="twoPlayers.txt" />
     <Text Include="win.txt" />
   </ItemGroup>
   <ItemGroup>

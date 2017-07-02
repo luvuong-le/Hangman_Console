@@ -43,6 +43,12 @@
     <Text Include="showLLeg.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="singlePlayer.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="twoPlayers.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
