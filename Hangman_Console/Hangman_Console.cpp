@@ -28,11 +28,18 @@ vector<string> loadWords(string filename);
 void displayLettersGuessed(vector<char> letters_guessed);
 void removeStringBuffer();
 void displayErrorMessage(string message);
+void displayFullScreen();
 
 int main()
 {
+	displayFullScreen();
 	chooseGameType();
     return 0;
+}
+
+void displayFullScreen() {
+	//For Full Screen: SetConsoleDisplayMode(GetStdHandle(STD_OUTPUT_HANDLE), CONSOLE_FULLSCREEN_MODE, 0);
+	ShowWindow(GetConsoleWindow(), SW_MAXIMIZE);
 }
 
 void displayErrorMessage(string message) {
