@@ -28,6 +28,7 @@ vector<string> loadWords(string filename);
 void displayLettersGuessed(vector<char> letters_guessed);
 void removeStringBuffer();
 void displayErrorMessage(string message);
+void displaySuccessMessage(string message);
 void displayFullScreen();
 
 int main()
@@ -48,9 +49,15 @@ void displayErrorMessage(string message) {
 	changeTextColor(15);
 }
 
+void displaySuccessMessage(string message) {
+	changeTextColor(005);
+	cout << "SUCCESS: " << message;
+	changeTextColor(15);
+}
+
 void removeStringBuffer() {
 	cin.clear();
-	//cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
 	Sleep(0700);
 }
 
@@ -104,12 +111,11 @@ void chooseGameType() {
 	clearScreen();
 	changeTextColor(15);
 	readFile("hangman_title.txt");
-	string choice; 
+	int gameChoice = 0; 
 	cout << "Please enter which mode you would like to play";
 	cout << "\n1. Single Player \n2. Two Players \n3. Exit" << endl;
 	cout << "Enter number for game: ";
-	getline(cin, choice);
-	int gameChoice = stoi(choice);
+	cin >> gameChoice;
 		while (gameChoice != 3) {
 			switch (gameChoice) {
 			case 1: 
@@ -122,10 +128,8 @@ void chooseGameType() {
 				exit(EXIT_SUCCESS);
 				break;
 			default:
-				cout << "Invalid Input, You must enter a number";
-				cin.clear();
-				cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
-				Sleep(0700);
+				displayErrorMessage("\nInvalid Input, You must enter a number");
+				removeStringBuffer();
 				chooseGameType();
 				break;
 			}
@@ -188,6 +192,7 @@ void startGame(int gameType) {
 }
 
 void startTwoPlayer(int gameType) {
+	removeStringBuffer();
 	clearScreen();
 	readFile("twoPlayers.txt");
 	cout << "\nIn this mode, one player will display a secret word for the other to guess, If the other player cannot guess it they lose!!" << endl;
@@ -195,62 +200,56 @@ void startTwoPlayer(int gameType) {
 	string player1;
 	string player2;
 
+
 	do {
 		cout << "\nEnter Player 1's Name: ";
 		getline(cin, player1);
 
-		if (player1 == ""){
-			displayErrorMessage("Player 1 must have a name");
-			removeStringBuffer();
-			startTwoPlayer(gameType);
-		}
-
 		cout << "\nEnter Player 2's Name: ";
 		getline(cin, player2);
 
-		if (player2 == ""){
-			displayErrorMessage("Player 2 must have a name");
-			removeStringBuffer();
+		if (player1 == "" || player2 == ""){
+			displayErrorMessage("\nBoth Players must have a name");
 			startTwoPlayer(gameType);
 		}
+
 	} while (player1 == "" || player2 == "");
 
 
 	cout << "\nPlayers in this round: " << player1 << " & " << player2 << endl;
 
-	string secret_word;
-	int spaces_in_word;
-	int failed_inputs;
+	string secret_word = "";
+	int spaces_in_word = 0;
+	int failed_inputs = 0;
 
 	do {
 		cout << "\nPlayer 1 Please enter a word for Player 2 to guess: ";
 		getline(cin, secret_word);
 		for(int i = 0; i < secret_word.length(); i++){
 			if (isdigit(secret_word[i])) {
-				cout << "No Numbers are allowed in the word" << endl;
-				cin.clear();
-				cin.ignore(numeric_limits<streamsize>::max(), '\n');
+				displayErrorMessage("\nNo Numbers are allowed in the word");
+				removeStringBuffer();
+			}
+			else if (secret_word == "") {
+				displayErrorMessage("\nWord Cannot be Empty");
+				removeStringBuffer();
 			}
 		}
 		
-	} while (any_of(secret_word.begin(), secret_word.end(), isdigit));
+	} while (any_of(secret_word.begin(), secret_word.end(), isdigit) || secret_word == "");
 
 	do {
 		cout << "\nPlease enter amount of tries the user gets [Between 1 - 7]: ";
 		cin >> failed_inputs;
 		if (failed_inputs < 1 || failed_inputs > 7) {
-			cout << "Sorry thats not valid, Please try again" << endl;
-			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			displayErrorMessage("Sorry thats not valid, Please try again");
+			removeStringBuffer();
 			continue;
 		}
 	} while (failed_inputs < 1 || failed_inputs > 7);
 
 
 	clearScreen();
-
-	cout << "Player 1 has given you " << failed_inputs << " tries" << endl;
-	cout << "Your Word is: ";
 
 	string display = secret_word;
 
@@ -264,9 +263,11 @@ void startTwoPlayer(int gameType) {
 		}
 	}
 	
+	readFile("twoPlayers.txt");
+	cout << "Player 1 has given you " << failed_inputs << " tries" << endl;
+	cout << "Your Word is: ";
 	cout << display;
 	cout << "\n";
-	readFile("twoPlayers.txt");
 	int char_exposed = 0;
 
 	cout << "\nStarting Game......" << endl;
@@ -305,7 +306,7 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 		if (guess.length() == 1) {
 			//Check if the letter the user guessed is in the vector already, if not add it
 			if (find(letters_guessed.begin(), letters_guessed.end(), tolower(guess[0])) != letters_guessed.end()) {
-				cout << "Already Guessed";
+				displayErrorMessage("Youve Already Guessed This Letter");
 				startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType);
 			}
 			else {
@@ -315,14 +316,15 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 				for (int i = 0; i < word.length(); i++) {
 					if (tolower(guess[0]) == tolower(word[i])) {
 						if (hidden[i] == word[i]) {
-							cout << "\nYouve already guessed this letter!" << endl;
+							displayErrorMessage("Youve Already Guessed This Letter");
 							startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType);
 						}
 						else {
 							//If letter matches, display the hidden letter
 							hidden[i] = word[i];
 							//Logic to display one less star if character guessed is correct
-							cout << ">>> You guessed right! {" << word[i] << "}";
+							displaySuccessMessage("\n>>> You guessed right!");
+							cout << " {" << word[i] << "}";
 							char_exposed++;
 							correct_guess = true;
 							continue;
@@ -331,8 +333,8 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 				}
 			}
 		}
-		else {
-			cout << "Please enter one letter only" << endl;
+		else if(guess.length() == 1){
+			displayErrorMessage("Youve Already Guessed This Letter");
 			startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType);
 		}
 
@@ -344,7 +346,7 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 				cout << "You have run out of tries" << endl;
 				cout << "The word was: " << word << endl;
 				cout << "Better luck next time!" << endl;
-				cout << "\nWould you like to play again? [Y/N]" << endl;
+				cout << "\nWould you like to play again? [Y/N]: " << endl;
 				cin >> start_new_game;
 				if (start_new_game == "Y" || start_new_game == "y") {
 					chooseGameType();
@@ -401,7 +403,7 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 		cout << "\nThe word was: " << hidden << endl;
 		cout << "\nCongratulations: " << playerName << endl;
 		readFile("win.txt");
-		cout << "\nWould you like to play again? [Y/N]";
+		cout << "\nWould you like to play again? [Y/N]: ";
 		cin >> start_new_game;
 		if (start_new_game == "Y" || start_new_game == "y") {
 			chooseGameType();
