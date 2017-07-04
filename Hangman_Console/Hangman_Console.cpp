@@ -168,7 +168,15 @@ void startGame(int gameType) {
 	vector<char> letters_guessed;
 
 	//Display a random word with * numbers of letters
-	int random_index = rand() % words.size();
+	int random_index = 0;
+	if (words.size() > 0) {
+		random_index = rand() % words.size();
+	}
+	else {
+		displayErrorMessage("No words were found...Words.txt was not found\n");
+		Sleep(1500);
+		chooseGameType();
+	}
 
 	string assignedWord = "";
 
@@ -186,7 +194,7 @@ void startGame(int gameType) {
 			continue;
 		}
 		else {
-			display[i] = '*';
+			display[i] = '_';
 		}
 	}
 
@@ -231,14 +239,24 @@ void startTwoPlayer(int gameType) {
 			if (isdigit(secret_word[i])) {
 				displayErrorMessage("No Numbers are allowed in the word\n");
 				Sleep(0700);
+				break;
 			}
 			else if (secret_word == "") {
-				displayErrorMessage("\nWord Cannot be Empty");
+				displayErrorMessage("Word Cannot be Empty\n");
 				Sleep(0700);
+				break;
+			}
+			else if (!isalpha(secret_word[i]) && !isdigit(secret_word[i]) && secret_word[i] != ' ') {
+				displayErrorMessage("No Special Characters are allowed\n");
+				Sleep(0700);
+				break;
+			}
+			else {
+				continue;
 			}
 		}
 		
-	} while (any_of(secret_word.begin(), secret_word.end(), isdigit) || secret_word == "");
+	} while (any_of(secret_word.begin(), secret_word.end(), isdigit) || secret_word == "" || !any_of(secret_word.begin(), secret_word.end(), isalpha) && !any_of(secret_word.begin(), secret_word.end(), isdigit));
 
 	do {
 		cout << "\nPlease enter amount of tries the user gets [Between 1 - 7]: ";
@@ -261,7 +279,7 @@ void startTwoPlayer(int gameType) {
 			continue;
 		}
 		else {
-			display[i] = '*';
+			display[i] = '_';
 		}
 	}
 	
@@ -306,9 +324,17 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 		cin >> guess;
 
 		if (guess.length() == 1) {
+			if (!isalpha(guess[0]) && !isdigit(guess[0])) {
+				displayErrorMessage("No Special Characters are allowed");
+				startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType);
+			}
 			//Check if the letter the user guessed is in the vector already, if not add it
 			if (find(letters_guessed.begin(), letters_guessed.end(), tolower(guess[0])) != letters_guessed.end()) {
 				displayErrorMessage("Youve Already Guessed This Letter");
+				startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType);
+			}
+			else if (isdigit(guess[0])) {
+				displayErrorMessage("Cant Guess Numbers");
 				startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType);
 			}
 			else {
@@ -335,8 +361,8 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 				}
 			}
 		}
-		else if(guess.length() == 1){
-			displayErrorMessage("Youve Already Guessed This Letter");
+		else if(guess.length() > 1){
+			displayErrorMessage("Enter One Letter Only");
 			startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType);
 		}
 
