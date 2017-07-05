@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include <iostream>
 #include <string>
+#include <string.h>
 #include <fstream>
 #include <algorithm>
 #include <stdlib.h>
@@ -19,7 +20,7 @@ using namespace std;
 
 void readFile(string filename);
 void startGame(int gameType);
-void startGuess(string playerName, vector<char> letters_guessed, string assignedWord, string hidden, int failed_inputs, int char_exposed, int spaces_in_word, int gameType);
+void startGuess(string playerName, vector<char> letters_guessed, string assignedWord, string hidden, int failed_inputs, int char_exposed, int spaces_in_word, int gameType, int hints);
 void startTwoPlayer(int gameType);
 void chooseGameType();
 void clearScreen();
@@ -30,12 +31,33 @@ void removeStringBuffer();
 void displayErrorMessage(string message);
 void displaySuccessMessage(string message);
 void displayFullScreen();
+bool strcasecmp(string compare1, string compare2);
+void useHint(string playerName, vector<char> letters_guessed, string word, string hidden, int failed_inputs, int char_exposed, int spaces_in_word, int gameType, int hints);
 
 int main()
 {
 	displayFullScreen();
 	chooseGameType();
     return 0;
+}
+
+bool strcasecmp(string compare1, string compare2) {
+	string lowerString1;
+	string lowerString2;
+	for (int i = 0; i < compare1.length(); i++) {
+		lowerString1 = tolower(compare1[i]);
+	}
+
+	for (int i = 0; i < compare2.length(); i++) {
+		lowerString2 = tolower(compare2[i]);
+	}
+
+	if (lowerString1 == lowerString2) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 void displayFullScreen() {
@@ -145,6 +167,7 @@ void startGame(int gameType) {
 	int failed_inputs = 7;
 	int char_exposed = 0;
 	int spaces_in_word = 0;
+	int hints = 3;
 
 
 	string player_name;
@@ -198,7 +221,7 @@ void startGame(int gameType) {
 		}
 	}
 
-	startGuess(player_name, letters_guessed, assignedWord, display, failed_inputs, char_exposed, spaces_in_word, gameType);
+	startGuess(player_name, letters_guessed, assignedWord, display, failed_inputs, char_exposed, spaces_in_word, gameType, hints);
 }
 
 void startTwoPlayer(int gameType) {
@@ -231,6 +254,7 @@ void startTwoPlayer(int gameType) {
 	string secret_word = "";
 	int spaces_in_word = 0;
 	int failed_inputs = 0;
+	int hints = 3;
 
 	do {
 		cout << "\nPlayer 1 Please enter a word for Player 2 to guess: ";
@@ -297,10 +321,10 @@ void startTwoPlayer(int gameType) {
 	//Create a string vector to hold list of letters guessed
 	vector<char> letters_guessed;
 
-	startGuess(player2, letters_guessed, secret_word, display, failed_inputs, char_exposed, spaces_in_word, gameType);
+	startGuess(player2, letters_guessed, secret_word, display, failed_inputs, char_exposed, spaces_in_word, gameType, hints);
 }
 
-void startGuess(string playerName, vector<char> letters_guessed, string word, string hidden, int failed_inputs, int char_exposed, int spaces_in_word, int gameType)
+void startGuess(string playerName, vector<char> letters_guessed, string word, string hidden, int failed_inputs, int char_exposed, int spaces_in_word, int gameType, int hints)
 {
 	string guess;
 	string start_new_game;
@@ -312,13 +336,14 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 	else {
 		gameTitle = "twoPlayers.txt";
 	}
-
+	
 	while (char_exposed < word.length() - spaces_in_word) {
 		bool correct_guess = false;
 		//Begin Letting player guess the character one by one
 		cout << "\n\nPlease enter a character to guess in: " << hidden;
 		cout << "\nLetters guessed so far: ";
 		displayLettersGuessed(letters_guessed);
+		cout << "\nEnter [Help] for a Hint: [You have: " << hints << " Left]";
 		cout << "\nEnter Letter: ";
 
 		cin >> guess;
@@ -326,16 +351,16 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 		if (guess.length() == 1) {
 			if (!isalpha(guess[0]) && !isdigit(guess[0])) {
 				displayErrorMessage("No Special Characters are allowed");
-				startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType);
+				startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType, hints);
 			}
 			//Check if the letter the user guessed is in the vector already, if not add it
 			if (find(letters_guessed.begin(), letters_guessed.end(), tolower(guess[0])) != letters_guessed.end()) {
 				displayErrorMessage("Youve Already Guessed This Letter");
-				startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType);
+				startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType, hints);
 			}
 			else if (isdigit(guess[0])) {
 				displayErrorMessage("Cant Guess Numbers");
-				startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType);
+				startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType, hints);
 			}
 			else {
 				letters_guessed.push_back(tolower(guess[0]));
@@ -345,7 +370,7 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 					if (tolower(guess[0]) == tolower(word[i])) {
 						if (hidden[i] == word[i]) {
 							displayErrorMessage("Youve Already Guessed This Letter");
-							startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType);
+							startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType, hints);
 						}
 						else {
 							//If letter matches, display the hidden letter
@@ -361,9 +386,19 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 				}
 			}
 		}
-		else if(guess.length() > 1){
+		else if (guess.length() > 1 && strcasecmp(guess, "help") == false){
 			displayErrorMessage("Enter One Letter Only");
-			startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType);
+			startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType, hints);
+		}
+		else if (guess.length() > 1 && strcasecmp(guess, "help") == true) {
+			if (hints > 0){
+				hints = hints - 1;
+				useHint(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType, hints);
+			}
+			else {
+				displayErrorMessage("You have no hints left\n");
+				startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType, hints);
+			}
 		}
 
 		if (correct_guess == false) {
@@ -427,7 +462,7 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 		}
 	}
 
-	if (char_exposed == hidden.length() - spaces_in_word) {
+	if (char_exposed == hidden.length() - spaces_in_word && hints > 0) {
 		cout << "\nThe word was: " << hidden << endl;
 		cout << "\nCongratulations: " << playerName << endl;
 		readFile("win.txt");
@@ -439,6 +474,46 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 		else {
 			cout << "See you next time!!" << endl;
 			exit(EXIT_SUCCESS);
+		}
+	}
+	else if (char_exposed == hidden.length() - spaces_in_word && hints == 0) {
+		cout << "\nThe word was: " << hidden << endl;
+		cout << "\nTry not to use hints next time!: " << playerName << endl;
+		readFile("gameOver.txt");
+		cout << "\nWould you like to play again? [Y/N]: ";
+		cin >> start_new_game;
+		if (start_new_game == "Y" || start_new_game == "y") {
+			chooseGameType();
+		}
+		else {
+			cout << "See you next time!!" << endl;
+			exit(EXIT_SUCCESS);
+		}
+	}
+}
+
+void useHint(string playerName, vector<char> letters_guessed, string word, string hidden, int failed_inputs, int char_exposed, int spaces_in_word, int gameType, int hints) {
+	if (hints < 0) {
+		displayErrorMessage("You have no more hints\n");
+		startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType, hints);
+	}
+	else {
+		int random_index = rand() % word.size();
+		if (hidden[random_index] == '_') {
+			for (int i = 0; i < word.length(); i++) {
+				if (word[random_index] == word[i]) {
+					hidden[i] = word[i];
+					char_exposed++;
+				}
+				else {
+					continue;
+				}
+			}
+			displaySuccessMessage("Hint Given\n");
+			startGuess(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType, hints);
+		}
+		else {
+			useHint(playerName, letters_guessed, word, hidden, failed_inputs, char_exposed, spaces_in_word, gameType, hints);
 		}
 	}
 }
