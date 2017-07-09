@@ -135,18 +135,20 @@ void readFile(string filename) {
 
 	if (myfile.is_open()) {
 		while (getline(myfile, readLine)) {
+			changeTextColor(3);
 			cout << readLine << endl;
 		}
 	}
 	else {
 		cout << "Cannot open file" << endl;
 	}
+	changeTextColor(7);
 }
 
 void chooseGameType() {
 	clearScreen();
-	changeTextColor(15);
 	readFile("hangman_title.txt");
+	readFile("showRLeg.txt");
 	int gameChoice = 0; 
 	cout << "Please enter which mode you would like to play";
 	cout << "\n1. Single Player \n2. Two Players \n3. Exit" << endl;
@@ -178,7 +180,7 @@ void chooseGameType() {
 void startGame(int gameType) {
 	clearScreen();
 	readFile("singlePlayer.txt");
-	int failed_inputs = 7;
+	int failed_inputs = 9;
 	int char_exposed = 0;
 	int spaces_in_word = 0;
 	int hints = 3;
@@ -271,7 +273,7 @@ void startTwoPlayer(int gameType) {
 	int hints = 3;
 
 	do {
-		cout << "\nPlayer 1 Please enter a word for Player 2 to guess: ";
+		cout << "\n" << player1 << " please enter a word for " << player2 << " to guess: ";
 		getline(cin, secret_word);
 		for(int i = 0; i < secret_word.length(); i++){
 			if (isdigit(secret_word[i])) {
@@ -294,14 +296,14 @@ void startTwoPlayer(int gameType) {
 	} while (any_of(secret_word.begin(), secret_word.end(), isdigit) || secret_word == "" || checkSpecialCharacter(secret_word) > 0);
 
 	do {
-		cout << "\nPlease enter amount of tries the user gets [Between 1 - 7]: ";
+		cout << "\nPlease enter amount of tries " << player2 << "gets [Between 1 - 9]: ";
 		cin >> failed_inputs;
-		if (failed_inputs < 1 || failed_inputs > 7) {
+		if (failed_inputs < 1 || failed_inputs > 9) {
 			displayErrorMessage("Sorry thats not valid, Please try again\n");
 			removeStringBuffer();
 			continue;
 		}
-	} while (failed_inputs < 1 || failed_inputs > 7);
+	} while (failed_inputs < 1 || failed_inputs > 9);
 
 
 	clearScreen();
@@ -319,9 +321,10 @@ void startTwoPlayer(int gameType) {
 	}
 	
 	readFile("twoPlayers.txt");
-	cout << "Player 1 has given you " << failed_inputs << " tries" << endl;
+	cout << player1 << " has given you " << failed_inputs << " tries" << endl;
 	cout << "Your Word is: ";
 	cout << display;
+	cout << "\nContains: " << secret_word.length() << " Characters";
 	cout << "\n";
 	int char_exposed = 0;
 
@@ -365,7 +368,7 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 		cout << "\n\nPlease enter a character to guess in: " << hidden;
 		cout << "\nLetters guessed so far: ";
 		displayLettersGuessed(letters_guessed);
-		cout << "\nEnter [Help] for a Hint: [You have: " << hints << " Left]";
+		cout << "\nEnter [HELP] for a Hint: [You have: " << hints << " Left]";
 		cout << "\nEnter Letter: ";
 
 		cin >> guess;
@@ -427,6 +430,9 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 			failed_inputs--;
 			switch (failed_inputs) {
 			case 0:
+				clearScreen();
+				readFile(gameTitle);
+				readFile("showRLeg.txt");
 				readFile("gameOver.txt");
 				cout << "You have run out of tries" << endl;
 				cout << "The word was: " << word << endl;
@@ -444,37 +450,50 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 			case 1:
 				clearScreen();
 				readFile(gameTitle);
-				readFile("showRLeg.txt");
+				readFile("showLLeg.txt");
+				cout << "You have: " << failed_inputs << " tries left" << endl;
 				cout << "\nYou have one more chance left!!\n" << endl;
 				break;
 			case 2:
 				clearScreen();
 				readFile(gameTitle);
-				readFile("showLLeg.txt");
+				readFile("showRArm.txt");
 				cout << "You have: " << failed_inputs << " tries left" << endl;
 				break;
 			case 3:
 				clearScreen();
 				readFile(gameTitle);
-				readFile("showRArm.txt");
+				readFile("showLArm.txt");
 				cout << "You have: " << failed_inputs << " tries left" << endl;
 				break;
 			case 4:
 				clearScreen();
 				readFile(gameTitle);
-				readFile("showLArm.txt");
+				readFile("showBody.txt");
 				cout << "You have: " << failed_inputs << " tries left" << endl;
 				break;
 			case 5:
 				clearScreen();
 				readFile(gameTitle);
-				readFile("showBody.txt");
+				readFile("showHead.txt");
 				cout << "You have: " << failed_inputs << " tries left" << endl;
 				break;
 			case 6:
 				clearScreen();
 				readFile(gameTitle);
-				readFile("showHead.txt");
+				readFile("showRope.txt");
+				cout << "You have: " << failed_inputs << " tries left" << endl;
+				break;
+			case 7:
+				clearScreen();
+				readFile(gameTitle);
+				readFile("showStandTop.txt");
+				cout << "You have: " << failed_inputs << " tries left" << endl;
+				break;
+			case 8:
+				clearScreen();
+				readFile(gameTitle);
+				readFile("showStand.txt");
 				cout << "You have: " << failed_inputs << " tries left" << endl;
 				break;
 			default:

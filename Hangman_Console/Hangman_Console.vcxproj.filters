@@ -52,6 +52,15 @@
     <Text Include="words.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="showStand.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="showStandTop.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="showRope.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
