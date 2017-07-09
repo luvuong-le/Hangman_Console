@@ -33,6 +33,7 @@ void displaySuccessMessage(string message);
 void displayFullScreen();
 bool strcasecmp(string compare1, string compare2);
 void useHint(string playerName, vector<char> letters_guessed, string word, string hidden, int failed_inputs, int char_exposed, int spaces_in_word, int gameType, int hints);
+int checkSpecialCharacter(string word);
 
 int main()
 {
@@ -63,6 +64,19 @@ bool strcasecmp(string compare1, string compare2) {
 void displayFullScreen() {
 	//For Full Screen: SetConsoleDisplayMode(GetStdHandle(STD_OUTPUT_HANDLE), CONSOLE_FULLSCREEN_MODE, 0);
 	ShowWindow(GetConsoleWindow(), SW_MAXIMIZE);
+}
+
+int checkSpecialCharacter(string word) {
+	int specialCharacters = 0;
+	for (int i = 0; i < word.length(); i++) {
+		if (!isalnum(word[i])) {
+			specialCharacters++;
+		}
+		else {
+			continue;
+		}
+	}
+	return specialCharacters;
 }
 
 void displayErrorMessage(string message) {
@@ -270,17 +284,14 @@ void startTwoPlayer(int gameType) {
 				Sleep(0700);
 				break;
 			}
-			else if (!isalpha(secret_word[i]) && !isdigit(secret_word[i]) && secret_word[i] != ' ') {
+			else if (!isalnum(secret_word[i])) {
 				displayErrorMessage("No Special Characters are allowed\n");
 				Sleep(0700);
 				break;
 			}
-			else {
-				continue;
-			}
 		}
 		
-	} while (any_of(secret_word.begin(), secret_word.end(), isdigit) || secret_word == "" || !any_of(secret_word.begin(), secret_word.end(), isalpha) && !any_of(secret_word.begin(), secret_word.end(), isdigit));
+	} while (any_of(secret_word.begin(), secret_word.end(), isdigit) || secret_word == "" || checkSpecialCharacter(secret_word) > 0);
 
 	do {
 		cout << "\nPlease enter amount of tries the user gets [Between 1 - 7]: ";
@@ -338,6 +349,17 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 	}
 	
 	while (char_exposed < word.length() - spaces_in_word) {
+		if (gameType == 1) {
+			Sleep(1000);
+			clearScreen();
+			readFile("singlePlayer.txt");
+		}
+		else {
+			Sleep(1000);
+			clearScreen();
+			readFile("twoPlayers.txt");
+		}
+
 		bool correct_guess = false;
 		//Begin Letting player guess the character one by one
 		cout << "\n\nPlease enter a character to guess in: " << hidden;
