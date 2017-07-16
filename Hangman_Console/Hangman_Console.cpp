@@ -10,9 +10,12 @@
 #include <stdlib.h>
 #include <ctime>
 #include <windows.h>
+#include <mmsystem.h>
 #include <algorithm>
 #include <limits.h>
 #include <vector>
+
+
 #undef min
 #undef max
 
@@ -31,6 +34,7 @@ void removeStringBuffer();
 void displayErrorMessage(string message);
 void displaySuccessMessage(string message);
 void displayFullScreen();
+void displayPlayerStatus(int tries_left);
 bool strcasecmp(string compare1, string compare2);
 void useHint(string playerName, vector<char> letters_guessed, string word, string hidden, int failed_inputs, int char_exposed, int spaces_in_word, int gameType, int hints);
 int checkSpecialCharacter(string word);
@@ -40,6 +44,46 @@ int main()
 	displayFullScreen();
 	chooseGameType();
     return 0;
+}
+
+void displayPlayerStatus(int failed_inputs) {
+	switch (failed_inputs) {
+	case 1:
+		readFile("showLLeg.txt");
+		cout << "You have: " << failed_inputs << " tries left" << endl;
+		cout << "\nYou have one more chance left!!\n" << endl;
+		break;
+	case 2:
+		readFile("showRArm.txt");
+		cout << "You have: " << failed_inputs << " tries left" << endl;
+		break;
+	case 3:
+		readFile("showLArm.txt");
+		cout << "You have: " << failed_inputs << " tries left" << endl;
+		break;
+	case 4:
+		readFile("showBody.txt");
+		cout << "You have: " << failed_inputs << " tries left" << endl;
+		break;
+	case 5:
+		readFile("showHead.txt");
+		cout << "You have: " << failed_inputs << " tries left" << endl;
+		break;
+	case 6:
+		readFile("showRope.txt");
+		cout << "You have: " << failed_inputs << " tries left" << endl;
+		break;
+	case 7:
+		readFile("showStandTop.txt");
+		cout << "You have: " << failed_inputs << " tries left" << endl;
+		break;
+	case 8:
+		readFile("showStand.txt");
+		cout << "You have: " << failed_inputs << " tries left" << endl;
+		break;
+	default:
+		break;
+	}
 }
 
 bool strcasecmp(string compare1, string compare2) {
@@ -213,7 +257,7 @@ void startGame(int gameType) {
 	}
 	else {
 		displayErrorMessage("No words were found...Words.txt was not found\n");
-		Sleep(1500);
+		Sleep(1000);
 		chooseGameType();
 	}
 
@@ -353,14 +397,16 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 	
 	while (char_exposed < word.length() - spaces_in_word) {
 		if (gameType == 1) {
-			Sleep(1000);
+			Sleep(0700);
 			clearScreen();
 			readFile("singlePlayer.txt");
+			displayPlayerStatus(failed_inputs);
 		}
 		else {
-			Sleep(1000);
+			Sleep(0700);
 			clearScreen();
 			readFile("twoPlayers.txt");
+			displayPlayerStatus(failed_inputs);
 		}
 
 		bool correct_guess = false;
@@ -402,6 +448,7 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 							hidden[i] = word[i];
 							//Logic to display one less star if character guessed is correct
 							displaySuccessMessage(">>> You guessed right!");
+							PlaySound(TEXT("Sounds\\Correct_SFX.wav"), NULL, SND_FILENAME | SND_SYNC);
 							cout << " {" << word[i] << "}\n";
 							char_exposed++;
 							correct_guess = true;
@@ -428,6 +475,7 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 
 		if (correct_guess == false) {
 			failed_inputs--;
+			PlaySound(TEXT("Sounds\\Wrong_SFX.wav"), NULL, SND_FILENAME | SND_SYNC);
 			switch (failed_inputs) {
 			case 0:
 				clearScreen();
@@ -447,57 +495,7 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 					exit(EXIT_SUCCESS);
 				}
 				break;
-			case 1:
-				clearScreen();
-				readFile(gameTitle);
-				readFile("showLLeg.txt");
-				cout << "You have: " << failed_inputs << " tries left" << endl;
-				cout << "\nYou have one more chance left!!\n" << endl;
-				break;
-			case 2:
-				clearScreen();
-				readFile(gameTitle);
-				readFile("showRArm.txt");
-				cout << "You have: " << failed_inputs << " tries left" << endl;
-				break;
-			case 3:
-				clearScreen();
-				readFile(gameTitle);
-				readFile("showLArm.txt");
-				cout << "You have: " << failed_inputs << " tries left" << endl;
-				break;
-			case 4:
-				clearScreen();
-				readFile(gameTitle);
-				readFile("showBody.txt");
-				cout << "You have: " << failed_inputs << " tries left" << endl;
-				break;
-			case 5:
-				clearScreen();
-				readFile(gameTitle);
-				readFile("showHead.txt");
-				cout << "You have: " << failed_inputs << " tries left" << endl;
-				break;
-			case 6:
-				clearScreen();
-				readFile(gameTitle);
-				readFile("showRope.txt");
-				cout << "You have: " << failed_inputs << " tries left" << endl;
-				break;
-			case 7:
-				clearScreen();
-				readFile(gameTitle);
-				readFile("showStandTop.txt");
-				cout << "You have: " << failed_inputs << " tries left" << endl;
-				break;
-			case 8:
-				clearScreen();
-				readFile(gameTitle);
-				readFile("showStand.txt");
-				cout << "You have: " << failed_inputs << " tries left" << endl;
-				break;
 			default:
-				cout << "Something has gone wrong.." << endl;
 				break;
 			}
 		}
