@@ -1,0 +1,24 @@
+--------------------------------------------------------------------------------------------------------------------------------------
+Welcome to Hangman (Console Version)!
+
+In this Hangman, there are two modes playable
+
+* Single Player * 
+	In this mode, you will be given a random word to guess
+	Tries: 9
+	Hints: 3
+
+* Two Players * 
+	In this mode, one person will be designated to choose a word for the other person
+	Make sure you dont look while they type it!!!
+	
+	Tries: Player 1 is able to choose how many tries Player 2 is able to get
+
+	Hints: Player 1 is able to choose how many hints Player 2 is given
+
+	The game continues as normal
+
+* Exit * 
+	Exit the game
+
+--------------------------------------------------------------------------------------------------------------------------------------

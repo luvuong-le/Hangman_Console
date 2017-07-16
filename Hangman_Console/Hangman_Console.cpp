@@ -38,6 +38,7 @@ void displayPlayerStatus(int tries_left);
 bool strcasecmp(string compare1, string compare2);
 void useHint(string playerName, vector<char> letters_guessed, string word, string hidden, int failed_inputs, int char_exposed, int spaces_in_word, int gameType, int hints);
 int checkSpecialCharacter(string word);
+void displayRules();
 
 int main()
 {
@@ -153,8 +154,9 @@ void clearScreen() {
 vector<string> loadWords(string filename) {
 	//Create a vector to hold the vector of words
 	vector<string> words;
+	string file = "ASCII\\" + filename;
 	string readLine;
-	ifstream myfile(filename.c_str());
+	ifstream myfile(file.c_str());
 
 	if (myfile.is_open()) {
 		while (getline(myfile, readLine)) {
@@ -173,9 +175,17 @@ void displayLettersGuessed(vector<char> letters_guessed) {
 void readFile(string filename) {
 	//Function for reading the ASCII Title in the hangman.txt file
 	//http://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20
+	string file = "";
+
+	if (filename == "Rules.txt") {
+		file = "Rules\\" + filename;
+	}
+	else {
+		file = "ASCII\\" + filename;
+	}
 	string readLine;
 
-	ifstream myfile(filename.c_str());
+	ifstream myfile(file.c_str());
 
 	if (myfile.is_open()) {
 		while (getline(myfile, readLine)) {
@@ -192,13 +202,14 @@ void readFile(string filename) {
 void chooseGameType() {
 	clearScreen();
 	readFile("hangman_title.txt");
+	displayRules();
 	readFile("showRLeg.txt");
 	int gameChoice = 0; 
 	cout << "Please enter which mode you would like to play";
-	cout << "\n1. Single Player \n2. Two Players \n3. Exit" << endl;
+	cout << "\n1. Single Player \n2. Two Players \n3. Audio Rules \n4. Exit" << endl;
 	cout << "Enter number for game: ";
 	cin >> gameChoice;
-		while (gameChoice != 3) {
+		while (gameChoice != 4) {
 			switch (gameChoice) {
 			case 1: 
 				removeStringBuffer();
@@ -209,6 +220,11 @@ void chooseGameType() {
 				startTwoPlayer(gameChoice);
 				break;
 			case 3:
+				PlaySound(TEXT("Rules\\Rules.wav"), NULL, SND_FILENAME | SND_ASYNC);
+				system("pause");
+				chooseGameType();
+				break;
+			case 4:
 				exit(EXIT_SUCCESS);
 				break;
 			default:
@@ -220,6 +236,7 @@ void chooseGameType() {
 		}
 }
 
+void displayRules() { readFile("Rules.txt");  }
 
 void startGame(int gameType) {
 	clearScreen();
@@ -314,7 +331,7 @@ void startTwoPlayer(int gameType) {
 	string secret_word = "";
 	int spaces_in_word = 0;
 	int failed_inputs = 0;
-	int hints = 3;
+	int hints = 0;
 
 	do {
 		cout << "\n" << player1 << " please enter a word for " << player2 << " to guess: ";
@@ -340,7 +357,7 @@ void startTwoPlayer(int gameType) {
 	} while (any_of(secret_word.begin(), secret_word.end(), isdigit) || secret_word == "" || checkSpecialCharacter(secret_word) > 0);
 
 	do {
-		cout << "\nPlease enter amount of tries " << player2 << "gets [Between 1 - 9]: ";
+		cout << "\nPlease enter amount of tries " << player2 << " gets [Between 1 - 9]: ";
 		cin >> failed_inputs;
 		if (failed_inputs < 1 || failed_inputs > 9) {
 			displayErrorMessage("Sorry thats not valid, Please try again\n");
@@ -348,6 +365,16 @@ void startTwoPlayer(int gameType) {
 			continue;
 		}
 	} while (failed_inputs < 1 || failed_inputs > 9);
+
+	do {
+		cout << "\nPlease enter amount of hints " << player2 << " gets [Between 1 - " <<  secret_word.length() - 1 << "]: ";
+		cin >> hints;
+		if (hints < 1 || hints > secret_word.length() - 1) {
+			displayErrorMessage("Sorry thats not valid, Please try again\n");
+			removeStringBuffer();
+			continue;
+		}
+	} while (hints < 1 || hints > secret_word.length() - 1);
 
 
 	clearScreen();
@@ -448,7 +475,7 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 							hidden[i] = word[i];
 							//Logic to display one less star if character guessed is correct
 							displaySuccessMessage(">>> You guessed right!");
-							PlaySound(TEXT("Sounds\\Correct_SFX.wav"), NULL, SND_FILENAME | SND_SYNC);
+							PlaySound(TEXT("Sounds\\Correct_SFX.wav"), NULL, SND_FILENAME | SND_ASYNC);
 							cout << " {" << word[i] << "}\n";
 							char_exposed++;
 							correct_guess = true;
@@ -475,7 +502,7 @@ void startGuess(string playerName, vector<char> letters_guessed, string word, st
 
 		if (correct_guess == false) {
 			failed_inputs--;
-			PlaySound(TEXT("Sounds\\Wrong_SFX.wav"), NULL, SND_FILENAME | SND_SYNC);
+			PlaySound(TEXT("Sounds\\Wrong_SFX.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			switch (failed_inputs) {
 			case 0:
 				clearScreen();
