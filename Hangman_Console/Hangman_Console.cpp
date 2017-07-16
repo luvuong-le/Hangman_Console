@@ -113,7 +113,7 @@ void displayFullScreen() {
 int checkSpecialCharacter(string word) {
 	int specialCharacters = 0;
 	for (int i = 0; i < word.length(); i++) {
-		if (!isalnum(word[i])) {
+		if (!isalnum(word[i]) && word[i] != ' ') {
 			specialCharacters++;
 		}
 		else {
@@ -330,7 +330,7 @@ void startTwoPlayer(int gameType) {
 				Sleep(0700);
 				break;
 			}
-			else if (!isalnum(secret_word[i])) {
+			else if (!isalnum(secret_word[i]) && secret_word[i] != ' ') {
 				displayErrorMessage("No Special Characters are allowed\n");
 				Sleep(0700);
 				break;
